@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
       body {
         margin: 30px;
@@ -31,6 +32,19 @@
 
       .work__photo {
         cursor: pointer;
+        width: 50px;
+        height: 50px;
+      }
+
+      .work__link {
+        text-decoration: none;
+        color: black;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+
+      .work__link:hover {
+        text-decoration: underline;
       }
 
       .popup_opened {
@@ -52,11 +66,32 @@
         border: 2px solid lightgrey;
         padding: 5px;
         margin: 5px;
+        display: flex;
+        flex-direction: column;
       }
     </style>
   </head>
   <body>
     <div class="all">
+      <div class="form-group">
+        <label for="comment">Ссылка:</label>
+        <textarea
+          type="text"
+          id="question"
+          class="form-control"
+          name="question"
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <button
+          class="btn btn-info"
+          type="submit"
+          id="submit"
+          onclick="submit()"
+        >
+          Send It!
+        </button>
+      </div>
       <div class="cards" id="cards">
         <h1>Верстка</h1>
       </div>
@@ -66,19 +101,12 @@
 
     <template class="tpl" id="tpl">
       <div class="work" id="work">
-        <h2 class="work__name" id="name"></h2>
-        <img
-          src=""
-          alt="123"
-          class="work__photo"
-          id="photo"
-          style="width: 50px; height: 50px"
-        />
+        <a href="" class="work__link" id="link"></a>
+        <img src="" alt="123" class="work__photo" id="photo" />
         <br />
-        <a href="" class="work__link" id="link">Ссылка hh</a>
       </div>
     </template>
-
+    <div id="info"></div>
     <div class="popup popup_type_more">
       <div class="popap__inner">
         <button
@@ -91,8 +119,100 @@
       </div>
     </div>
   </body>
-
   <script>
+    // (function () {
+    //   console.log("sdasdsad");
+    //   var app =
+    //       "https://script.googleusercontent.com/macros/echo?user_content_key=B4odVVlU4uk0TlvqWxpbG2J7-3zDgj2hDVGmWmuZcuGo7jmI3mWiHJSO-2pwuBK1bIzvyJ-9HCh0iaA-QKALi6kVOT_RXogbm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD2wkNO_uCZphCWSJCDeIFHBW-QyQQV6gSUC75ilWeR86dy1N-XnutwhTw-ejXduZPlzryRaS5-YSpy6XQQ-kyEfq1cbHLzCbtz9Jw9Md8uu&lib=MmyZmOUca0jf9580WMRa_CDDJopxwBlFG",
+    //     output = "",
+    //     xhr = new XMLHttpRequest();
+    //   xhr.open("GET", app);
+    //   xhr.onreadystatechange = function () {
+    //     if (xhr.readyState !== 4) return;
+
+    //     if (xhr.status == 200) {
+    //       try {
+    //         var r = JSON.parse(xhr.responseText),
+    //           result = r["result"];
+    //         for (var i = 0; i < result.length; i++) {
+    //           var obj = r["result"][i];
+    //           output += obj.join("<br/>") + "<br/><hr/>";
+    //         }
+    //       } catch (e) {}
+    //     }
+
+    //     document.getElementById("info").innerHTML = output;
+    //   };
+    //   xhr.send();
+    // })();
+
+    const endp =
+      "https://script.google.com/macros/s/AKfycbzRWm10SJkDRMbOmSYFoIRBHtOdjkDtYG9MAaAihNLjt9SJ_jsuvN91c1Xsd4UWo1CReg/exec";
+    console.log(endp);
+
+    function submit() {
+      console.log("sdasds");
+      // const XHR = new XMLHttpRequest();
+      // XHR.open("POST", endp);
+      // XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      // XHR.send("dsadsa");
+      // XHR.addEventListener("load", function (event) {
+      //   alert("Yeah! Data sent and response loaded.");
+      // });
+
+      // // Define what happens in case of error
+      // XHR.addEventListener(" error", function (event) {
+      //   alert("Oops! Something went wrong.");
+      // });
+      var rq = $.ajax({
+        type: "POST",
+        url: endp,
+        data: $("#answer, #question").serialize(),
+      });
+      rq.done(function (data) {
+        toastr["success"](JSON.stringify(data), "Успех");
+        console.log("success", data);
+      });
+      rq.fail(function (err) {
+        toastr["err"](JSON.stringify(err), "Проблема на клиенте");
+        console.log("error", err);
+      });
+
+      $(function () {
+        $("#submit").click(submit);
+      });
+    }
+
+    output = "";
+
+    fetch(endp)
+      .then((res) => res.text())
+      .then((data) => {
+        var r = JSON.parse(data),
+          result = r["result"];
+
+        for (var i = 0; i < result.length; i++) {
+          var obj = r["result"][i];
+          console.log(obj);
+          const newWork = block.content.cloneNode(true);
+          console.log(newWork);
+          const image = newWork.getElementById("photo");
+          const nimage = newWork.querySelector(".work__photo");
+          console.log(obj[2]);
+          newWork.querySelector(".work__link").textContent = obj[1];
+          newWork.querySelector(".work__link").href = obj[2];
+          cards.appendChild(newWork);
+        }
+      })
+      .catch((err) => console.log(err));
+
+    // fetch(endp)
+    //   .then((res) => res.text())
+    //   .then((data) => {
+    //     console.log(data);
+    //     const json = JSON.parse(data);
+    //     console.log(json);
+    //   });
     const arr1 = [
       {
         name: "Программист / верстальщик",
@@ -118,9 +238,19 @@
         link: "https://hh.ru/vacancy/75562038?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
       },
       {
-        name: "Frontend Developer",
-        photo: "./images/5.jpg",
-        link: "https://hh.ru/vacancy/75924075?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
+        name: "Ведущий специалист Службы по связям с общественностью",
+        photo: "./images/8.jpg",
+        link: "https://hh.ru/vacancy/75721068?from=vacancy",
+      },
+      {
+        name: "Junior+ frontend разработчик",
+        photo: "./images/9.jpg",
+        link: "https://hh.ru/vacancy/75935273?from=vacancy_search_list&query=Frontend%20%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA",
+      },
+      {
+        name: "Frontend-разработчик(PWA)",
+        photo: "./images/10.jpg",
+        link: "https://hh.ru/vacancy/72731102?from=vacancy_search_list&query=Frontend%20%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA",
       },
     ];
 
@@ -129,6 +259,11 @@
         name: "Веб-разработчик",
         photo: "./images/6.jpg",
         link: "https://hh.ru/vacancy/74223070?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
+      },
+      {
+        name: "Frontend Developer",
+        photo: "./images/7.jpg",
+        link: "https://hh.ru/vacancy/74192799?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
       },
       {
         name: "Frontend Developer",
@@ -153,30 +288,30 @@
       popup.classList.remove("popup_opened");
     }
 
-    arr1.map(({ name, photo, link }) => {
-      const newWork = block.content.cloneNode(true);
-      const image = newWork.getElementById("photo");
-      const nimage = newWork.querySelector(".work__photo");
-      newWork.querySelector(".work__name").textContent = name;
-      newWork.querySelector(".work__photo").src = photo;
-      newWork.querySelector(".work__link").href = link;
-      cards.appendChild(newWork);
+    // arr1.map(({ name, photo, link }) => {
+    //   const newWork = block.content.cloneNode(true);
+    //   const image = newWork.getElementById("photo");
+    //   const nimage = newWork.querySelector(".work__photo");
+    //   newWork.querySelector(".work__link").textContent = name;
+    //   newWork.querySelector(".work__photo").src = photo;
+    //   newWork.querySelector(".work__link").href = link;
+    //   cards.appendChild(newWork);
 
-      image.addEventListener("click", () => {
-        popupimg.src = nimage.src;
-        openPopup();
-      });
+    //   image.addEventListener("click", () => {
+    //     popupimg.src = nimage.src;
+    //     openPopup();
+    //   });
 
-      popup.addEventListener("click", () => {
-        closePopup();
-      });
-    });
+    //   popup.addEventListener("click", () => {
+    //     closePopup();
+    //   });
+    // });
 
     arr2.map(({ name, photo, link }) => {
       const newWork = block.content.cloneNode(true);
       const image = newWork.getElementById("photo");
       const nimage = newWork.querySelector(".work__photo");
-      newWork.querySelector(".work__name").textContent = name;
+      newWork.querySelector(".work__link").textContent = name;
       newWork.querySelector(".work__photo").src = photo;
       newWork.querySelector(".work__link").href = link;
       cards2.appendChild(newWork);
@@ -195,7 +330,7 @@
       const newWork = block.content.cloneNode(true);
       const image = newWork.getElementById("photo");
       const nimage = newWork.querySelector(".work__photo");
-      newWork.querySelector(".work__name").textContent = name;
+      newWork.querySelector(".work__link").textContent = name;
       newWork.querySelector(".work__photo").src = photo;
       newWork.querySelector(".work__link").href = link;
       cards3.appendChild(newWork);
