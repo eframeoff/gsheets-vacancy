@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" prefix="og: http://ogp.me/ns#">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -12,16 +12,12 @@
     <div class="main">
       <form class="main__form form">
         <div class="form__rate">
-          <label for="comment">Выберите рейтинг:</label>
+          <label for="comment">Оставьте комментарий (2 слова):</label>
           <input type="text" class="rate" />
         </div>
         <div class="form__r">
           <label for="comment">Выберите раздел:</label>
           <input type="text" class="r" />
-        </div>
-        <div class="form__name">
-          <label for="comment">Введите название:</label>
-          <input type="text" class="name" />
         </div>
         <div class="form__link">
           <label for="comment">Введите ссылку:</label>
@@ -33,20 +29,18 @@
       </form>
       <div class="main__body body">
         <div class="body__cards">
-          <h1>Верстка</h1>
+          <h1>Верстальщик</h1>
         </div>
-        <div class="body__cards2" id="cards2"><h1>Frontend</h1></div>
-        <div class="body__cards3" id="cards3"><h1>WEB</h1></div>
-      </div>
-      <div class="other" id="other">
-        <h1>Другое</h1>
+        <div class="body__cards2"><h1>Web-разработчик</h1></div>
+        <div class="body__cards3"><h1>Менеджер</h1></div>
       </div>
     </div>
 
     <template class="tpl">
       <div class="work">
-        <h2 class="work__rate"></h2>
-        <a href="" class="work__link"> </a>
+        <div class="work__rates">
+          <span class="work__rate"></span>
+        </div>
         <img src="#" alt="#" class="work__img" />
       </div>
     </template>
@@ -54,20 +48,21 @@
 
   <script>
     const cards = document.querySelector(".body__cards");
+    const cards2 = document.querySelector(".body__cards2");
+    const cards3 = document.querySelector(".body__cards3");
     const block = document.querySelector(".tpl");
     const dataLink = document.querySelector(".link");
-    const dataName = document.querySelector(".name");
     const dataR = document.querySelector(".r");
     const dataRate = document.querySelector(".rate");
     const dataImg = document.querySelector(".work__img");
 
-    const clickf = function (ee) {
-      location.href = ee;
+    const clickOnImage = function (source) {
+      location.href = source;
     };
 
     const urlGet =
-      "https://script.google.com/macros/s/AKfycbzRWm10SJkDRMbOmSYFoIRBHtOdjkDtYG9MAaAihNLjt9SJ_jsuvN91c1Xsd4UWo1CReg/exec";
-    const urlSet = `https://script.google.com/macros/s/AKfycbzLl0darI2L26DePSLLgFgR8Gos0f3Bzlrst06MhXiWV9p9QRVE-juGD6WxtOgB4oWT_g/exec?GoogleSheetId=12sjyoza_2v9wetwhltX4bSlJj9WY6enltMqlrtpW9VM`;
+      "https://script.google.com/macros/s/AKfycbxDuKnEGmL_rg0re5r15SSKDzV18BBTvL-245LD-bHq2X_8D1xyIu04pvl1vl2qKs5I/exec";
+    const urlSet = `https://script.google.com/macros/s/AKfycbw-hdySWpY8MeKR2JODL5fNN0mZJ_zZ0dvXMAKzkSztEnGO3_FmODaSfR8SASHCYyui/exec?GoogleSheetId=1bWdhZbG0tV8qsBACI4seWQQsRQfUnrUYrEIelvtMuP4`;
 
     fetch(urlGet)
       .then((res) => res.text())
@@ -77,30 +72,24 @@
 
         for (let i = 0; i < result.length; i++) {
           let obj = res["result"][i];
+          console.log(obj);
           const newWork = block.content.cloneNode(true);
-          console.log(newWork);
           const nimage = newWork.querySelector(".work__img");
-          newWork.querySelector(".work__link").textContent = obj[1];
-          newWork.querySelector(".work__link").href = obj[2];
-          newWork.querySelector(".work__rate").textContent = obj[3];
+          newWork.querySelector(".work__rate").textContent = obj[2];
           newWork.querySelector(".work__img").src =
-            "https://thumbnail." + obj[2].substring(8, 30) + ".png";
-          nimage.addEventListener("click", (e) => clickf(obj[2]));
-
+            "https://thumbnail." + obj[1].substring(8, 30) + ".png";
+          nimage.addEventListener("click", (e) => clickOnImage(obj[2]));
           const id = obj[0];
+
           switch (id) {
             case 1:
               cards.append(newWork);
-
               break;
             case 2:
               cards2.append(newWork);
               break;
             case 3:
               cards3.append(newWork);
-              break;
-            case 0:
-              other.append(newWork);
               break;
           }
           cards.append(newWork);
@@ -111,20 +100,16 @@
     function sendData() {
       const http = new XMLHttpRequest();
       const r = "&id=" + +dataR.value;
-      const name = "&name=" + dataName.value;
       const link = "&link=" + dataLink.value;
-      const rate = "&rate=" + dataRate.value;
-
-      console.log(urlSet + r + name + link + rate);
+      const rate = "&comment=" + dataRate.value;
       http.open("GET", urlSet + r + name + link + rate);
       http.onload = function () {
+        dataR.value = "";
+        dataRate.value = "";
+        dataLink.value = "";
         console.log(http.responseText);
       };
       http.send();
-      dataName.value = "";
-      dataR.value = "";
-      dataRate.value = "";
-      dataLink.value = "";
     }
   </script>
 </html>
