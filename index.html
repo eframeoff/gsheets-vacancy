@@ -1,348 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-      body {
-        margin: 30px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      .popup {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        visibility: hidden;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: lightgrey;
-        opacity: 0;
-        transition: 0.2s ease-in;
-      }
-
-      .work__photo {
-        cursor: pointer;
-        width: 50px;
-        height: 50px;
-      }
-
-      .work__link {
-        text-decoration: none;
-        color: black;
-        font-size: 20px;
-        margin-bottom: 15px;
-      }
-
-      .work__link:hover {
-        text-decoration: underline;
-      }
-
-      .popup_opened {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      .popap__img {
-        width: 800px;
-        height: 400px;
-      }
-
-      .all {
-        display: flex;
-        justify-content: space-around;
-      }
-
-      .work {
-        border: 2px solid lightgrey;
-        padding: 5px;
-        margin: 5px;
-        display: flex;
-        flex-direction: column;
-      }
-    </style>
   </head>
   <body>
-    <div class="all">
-      <div class="form-group">
-        <label for="comment">Ссылка:</label>
-        <textarea
-          type="text"
-          id="question"
-          class="form-control"
-          name="question"
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <button
-          class="btn btn-info"
-          type="submit"
-          id="submit"
-          onclick="submit()"
-        >
-          Send It!
+    <div class="main">
+      <form class="main__form form">
+        <div class="form__rate">
+          <label for="comment">Выберите рейтинг:</label>
+          <input type="text" class="rate" />
+        </div>
+        <div class="form__r">
+          <label for="comment">Выберите раздел:</label>
+          <input type="text" class="r" />
+        </div>
+        <div class="form__name">
+          <label for="comment">Введите название:</label>
+          <input type="text" class="name" />
+        </div>
+        <div class="form__link">
+          <label for="comment">Введите ссылку:</label>
+          <textarea type="text" class="link"></textarea>
+        </div>
+        <button class="button" type="button" onclick="sendData()">
+          Сохранить
         </button>
+      </form>
+      <div class="main__body body">
+        <div class="body__cards">
+          <h1>Верстка</h1>
+        </div>
+        <div class="body__cards2" id="cards2"><h1>Frontend</h1></div>
+        <div class="body__cards3" id="cards3"><h1>WEB</h1></div>
       </div>
-      <div class="cards" id="cards">
-        <h1>Верстка</h1>
+      <div class="other" id="other">
+        <h1>Другое</h1>
       </div>
-      <div class="cards2" id="cards2"><h1>Frontend</h1></div>
-      <div class="cards3" id="cards3"><h1>WEB</h1></div>
     </div>
 
-    <template class="tpl" id="tpl">
-      <div class="work" id="work">
-        <a href="" class="work__link" id="link"></a>
-        <img src="" alt="123" class="work__photo" id="photo" />
-        <br />
+    <template class="tpl">
+      <div class="work">
+        <h2 class="work__rate"></h2>
+        <a href="" class="work__link"> </a>
+        <img src="#" alt="#" class="work__img" />
       </div>
     </template>
-    <div id="info"></div>
-    <div class="popup popup_type_more">
-      <div class="popap__inner">
-        <button
-          class="popup__close"
-          type="button"
-          aria-label="Закрыть"
-        ></button>
-        <img class="popap__img" src="#" alt="#" />
-        <h2 class="popap__text"></h2>
-      </div>
-    </div>
   </body>
+
   <script>
-    // (function () {
-    //   console.log("sdasdsad");
-    //   var app =
-    //       "https://script.googleusercontent.com/macros/echo?user_content_key=B4odVVlU4uk0TlvqWxpbG2J7-3zDgj2hDVGmWmuZcuGo7jmI3mWiHJSO-2pwuBK1bIzvyJ-9HCh0iaA-QKALi6kVOT_RXogbm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD2wkNO_uCZphCWSJCDeIFHBW-QyQQV6gSUC75ilWeR86dy1N-XnutwhTw-ejXduZPlzryRaS5-YSpy6XQQ-kyEfq1cbHLzCbtz9Jw9Md8uu&lib=MmyZmOUca0jf9580WMRa_CDDJopxwBlFG",
-    //     output = "",
-    //     xhr = new XMLHttpRequest();
-    //   xhr.open("GET", app);
-    //   xhr.onreadystatechange = function () {
-    //     if (xhr.readyState !== 4) return;
+    const cards = document.querySelector(".body__cards");
+    const block = document.querySelector(".tpl");
+    const dataLink = document.querySelector(".link");
+    const dataName = document.querySelector(".name");
+    const dataR = document.querySelector(".r");
+    const dataRate = document.querySelector(".rate");
+    const dataImg = document.querySelector(".work__img");
 
-    //     if (xhr.status == 200) {
-    //       try {
-    //         var r = JSON.parse(xhr.responseText),
-    //           result = r["result"];
-    //         for (var i = 0; i < result.length; i++) {
-    //           var obj = r["result"][i];
-    //           output += obj.join("<br/>") + "<br/><hr/>";
-    //         }
-    //       } catch (e) {}
-    //     }
+    const clickf = function (ee) {
+      location.href = ee;
+    };
 
-    //     document.getElementById("info").innerHTML = output;
-    //   };
-    //   xhr.send();
-    // })();
-
-    const endp =
+    const urlGet =
       "https://script.google.com/macros/s/AKfycbzRWm10SJkDRMbOmSYFoIRBHtOdjkDtYG9MAaAihNLjt9SJ_jsuvN91c1Xsd4UWo1CReg/exec";
-    console.log(endp);
+    const urlSet = `https://script.google.com/macros/s/AKfycbzLl0darI2L26DePSLLgFgR8Gos0f3Bzlrst06MhXiWV9p9QRVE-juGD6WxtOgB4oWT_g/exec?GoogleSheetId=12sjyoza_2v9wetwhltX4bSlJj9WY6enltMqlrtpW9VM`;
 
-    function submit() {
-      console.log("sdasds");
-      // const XHR = new XMLHttpRequest();
-      // XHR.open("POST", endp);
-      // XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      // XHR.send("dsadsa");
-      // XHR.addEventListener("load", function (event) {
-      //   alert("Yeah! Data sent and response loaded.");
-      // });
-
-      // // Define what happens in case of error
-      // XHR.addEventListener(" error", function (event) {
-      //   alert("Oops! Something went wrong.");
-      // });
-      var rq = $.ajax({
-        type: "POST",
-        url: endp,
-        data: $("#answer, #question").serialize(),
-      });
-      rq.done(function (data) {
-        toastr["success"](JSON.stringify(data), "Успех");
-        console.log("success", data);
-      });
-      rq.fail(function (err) {
-        toastr["err"](JSON.stringify(err), "Проблема на клиенте");
-        console.log("error", err);
-      });
-
-      $(function () {
-        $("#submit").click(submit);
-      });
-    }
-
-    output = "";
-
-    fetch(endp)
+    fetch(urlGet)
       .then((res) => res.text())
       .then((data) => {
-        var r = JSON.parse(data),
-          result = r["result"];
+        let res = JSON.parse(data),
+          result = res["result"];
 
-        for (var i = 0; i < result.length; i++) {
-          var obj = r["result"][i];
-          console.log(obj);
+        for (let i = 0; i < result.length; i++) {
+          let obj = res["result"][i];
           const newWork = block.content.cloneNode(true);
           console.log(newWork);
-          const image = newWork.getElementById("photo");
-          const nimage = newWork.querySelector(".work__photo");
-          console.log(obj[2]);
+          const nimage = newWork.querySelector(".work__img");
           newWork.querySelector(".work__link").textContent = obj[1];
           newWork.querySelector(".work__link").href = obj[2];
-          cards.appendChild(newWork);
+          newWork.querySelector(".work__rate").textContent = obj[3];
+          newWork.querySelector(".work__img").src =
+            "https://thumbnail." + obj[2].substring(8, 30) + ".png";
+          nimage.addEventListener("click", (e) => clickf(obj[2]));
+
+          const id = obj[0];
+          switch (id) {
+            case 1:
+              cards.append(newWork);
+
+              break;
+            case 2:
+              cards2.append(newWork);
+              break;
+            case 3:
+              cards3.append(newWork);
+              break;
+            case 0:
+              other.append(newWork);
+              break;
+          }
+          cards.append(newWork);
         }
       })
       .catch((err) => console.log(err));
 
-    // fetch(endp)
-    //   .then((res) => res.text())
-    //   .then((data) => {
-    //     console.log(data);
-    //     const json = JSON.parse(data);
-    //     console.log(json);
-    //   });
-    const arr1 = [
-      {
-        name: "Программист / верстальщик",
-        photo: "./images/1.jpg",
-        link: "https://hh.ru/vacancy/74344921?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-      {
-        name: "Web-разработчик",
-        photo: "./images/2.jpg",
-        link: "https://hh.ru/vacancy/73338945?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-      {
-        name: "Верстальщик / Frontend-разработчик",
-        photo: "./images/3.jpg",
-        link: "https://hh.ru/vacancy/75901024?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-    ];
+    function sendData() {
+      const http = new XMLHttpRequest();
+      const r = "&id=" + +dataR.value;
+      const name = "&name=" + dataName.value;
+      const link = "&link=" + dataLink.value;
+      const rate = "&rate=" + dataRate.value;
 
-    const arr2 = [
-      {
-        name: "Junior web developer",
-        photo: "./images/4.jpg",
-        link: "https://hh.ru/vacancy/75562038?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-      {
-        name: "Ведущий специалист Службы по связям с общественностью",
-        photo: "./images/8.jpg",
-        link: "https://hh.ru/vacancy/75721068?from=vacancy",
-      },
-      {
-        name: "Junior+ frontend разработчик",
-        photo: "./images/9.jpg",
-        link: "https://hh.ru/vacancy/75935273?from=vacancy_search_list&query=Frontend%20%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA",
-      },
-      {
-        name: "Frontend-разработчик(PWA)",
-        photo: "./images/10.jpg",
-        link: "https://hh.ru/vacancy/72731102?from=vacancy_search_list&query=Frontend%20%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA",
-      },
-    ];
-
-    const arr3 = [
-      {
-        name: "Веб-разработчик",
-        photo: "./images/6.jpg",
-        link: "https://hh.ru/vacancy/74223070?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-      {
-        name: "Frontend Developer",
-        photo: "./images/7.jpg",
-        link: "https://hh.ru/vacancy/74192799?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-      {
-        name: "Frontend Developer",
-        photo: "./images/7.jpg",
-        link: "https://hh.ru/vacancy/74192799?from=vacancy_search_list&query=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%20web",
-      },
-    ];
-
-    const cards = document.getElementById("cards");
-    const cards2 = document.getElementById("cards2");
-    const cards3 = document.getElementById("cards3");
-
-    const block = document.getElementById("tpl");
-    const popupimg = document.querySelector(".popap__img");
-    const popup = document.querySelector(".popup");
-
-    function openPopup() {
-      popup.classList.add("popup_opened");
+      console.log(urlSet + r + name + link + rate);
+      http.open("GET", urlSet + r + name + link + rate);
+      http.onload = function () {
+        console.log(http.responseText);
+      };
+      http.send();
+      dataName.value = "";
+      dataR.value = "";
+      dataRate.value = "";
+      dataLink.value = "";
     }
-
-    function closePopup() {
-      popup.classList.remove("popup_opened");
-    }
-
-    // arr1.map(({ name, photo, link }) => {
-    //   const newWork = block.content.cloneNode(true);
-    //   const image = newWork.getElementById("photo");
-    //   const nimage = newWork.querySelector(".work__photo");
-    //   newWork.querySelector(".work__link").textContent = name;
-    //   newWork.querySelector(".work__photo").src = photo;
-    //   newWork.querySelector(".work__link").href = link;
-    //   cards.appendChild(newWork);
-
-    //   image.addEventListener("click", () => {
-    //     popupimg.src = nimage.src;
-    //     openPopup();
-    //   });
-
-    //   popup.addEventListener("click", () => {
-    //     closePopup();
-    //   });
-    // });
-
-    arr2.map(({ name, photo, link }) => {
-      const newWork = block.content.cloneNode(true);
-      const image = newWork.getElementById("photo");
-      const nimage = newWork.querySelector(".work__photo");
-      newWork.querySelector(".work__link").textContent = name;
-      newWork.querySelector(".work__photo").src = photo;
-      newWork.querySelector(".work__link").href = link;
-      cards2.appendChild(newWork);
-
-      image.addEventListener("click", () => {
-        popupimg.src = nimage.src;
-        openPopup();
-      });
-
-      popup.addEventListener("click", () => {
-        closePopup();
-      });
-    });
-
-    arr3.map(({ name, photo, link }) => {
-      const newWork = block.content.cloneNode(true);
-      const image = newWork.getElementById("photo");
-      const nimage = newWork.querySelector(".work__photo");
-      newWork.querySelector(".work__link").textContent = name;
-      newWork.querySelector(".work__photo").src = photo;
-      newWork.querySelector(".work__link").href = link;
-      cards3.appendChild(newWork);
-
-      image.addEventListener("click", () => {
-        popupimg.src = nimage.src;
-        openPopup();
-      });
-
-      popup.addEventListener("click", () => {
-        closePopup();
-      });
-    });
   </script>
 </html>
